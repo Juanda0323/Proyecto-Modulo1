@@ -4,91 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador Interplanetario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(120deg, #232526, #414345);
-            color: #fff;
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #232526 0%, #2c5364 100%);
+            color: #f5f5f5;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
         }
         .container {
-            max-width: 500px;
-            margin: 40px auto;
-            background: rgba(30, 30, 40, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-            padding: 32px 24px;
+            max-width: 420px;
+            margin: 48px auto 0 auto;
+            background: rgba(34, 40, 49, 0.98);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            padding: 36px 28px 28px 28px;
+            position: relative;
         }
         h1 {
+            font-family: 'Orbitron', 'Roboto', Arial, sans-serif;
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             color: #ffd700;
+            letter-spacing: 2px;
+            font-size: 2.1rem;
+            text-shadow: 0 2px 8px #0008;
         }
-        .menu, .section {
+        .menu {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .menu button {
+            flex: 1;
+            background: linear-gradient(90deg, #ffd700 60%, #ffb300 100%);
+            color: #232526;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0003;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .menu button:hover {
+            background: linear-gradient(90deg, #ffe066 60%, #ffd700 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .section {
+            background: #23272f;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #0002;
+            padding: 20px 16px 16px 16px;
             margin-bottom: 24px;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+            margin-bottom: 7px;
+            font-weight: 700;
+            color: #ffd700;
+            letter-spacing: 0.5px;
         }
         select, input[type="number"] {
             width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: none;
-            margin-bottom: 16px;
-        }
-        button {
-            background: #ffd700;
-            color: #232526;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 20px;
+            padding: 10px;
+            border-radius: 7px;
+            border: 1px solid #444;
+            background: #181b20;
+            color: #ffd700;
+            margin-bottom: 18px;
             font-size: 1rem;
-            cursor: pointer;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            transition: background 0.2s;
+            outline: none;
+            transition: border 0.2s;
         }
-        button:hover {
-            background: #ffb300;
+        select:focus, input[type="number"]:focus {
+            border: 1.5px solid #ffd700;
+        }
+        .info-box {
+            background: #181b20;
+            border-left: 4px solid #ffd700;
+            border-radius: 7px;
+            padding: 12px 14px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            color: #ffe066;
+            font-size: 0.98rem;
+            box-shadow: 0 1px 4px #0002;
         }
         .progress-bar {
             width: 100%;
             background: #333;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 4px #0002;
         }
         .progress {
-            height: 24px;
+            height: 28px;
             background: linear-gradient(90deg, #ffd700, #ffb300);
             width: 0%;
             color: #232526;
             text-align: center;
-            line-height: 24px;
+            line-height: 28px;
             font-weight: bold;
-            transition: width 0.5s;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: width 0.7s cubic-bezier(.4,2,.6,1), background 0.3s;
+            box-shadow: 0 1px 4px #ffd70044;
         }
         .event-log {
-            background: #222;
-            border-radius: 6px;
-            padding: 12px;
+            background: #181b20;
+            border-radius: 7px;
+            padding: 13px 12px;
             min-height: 60px;
             margin-bottom: 12px;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            color: #ffe066;
+            box-shadow: 0 1px 4px #0002;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .event-log div {
+            margin-bottom: 4px;
+            animation: fadeIn 0.5s;
+        }
+        .sim-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #ffd700 60%, #ffb300 100%);
+            color: #232526;
+            border: none;
+            border-radius: 8px;
+            padding: 13px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0003;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sim-btn:hover {
+            background: linear-gradient(90deg, #ffe066 60%, #ffd700 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 98vw;
+                padding: 16px 2vw 16px 2vw;
+            }
+            .section {
+                padding: 12px 4vw 12px 4vw;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Simulador Interplanetario</h1>
-        <div class="menu section">
-            <button onclick="showSection('planeta')">1. Seleccionar planeta</button>
-            <button onclick="showSection('nave')">2. Seleccionar nave</button>
-            <button onclick="showSection('simulacion')">3. Iniciar simulación</button>
+        <div class="menu">
+            <button onclick="showSection('planeta')">🌎 Planeta</button>
+            <button onclick="showSection('nave')">🚀 Nave</button>
+            <button onclick="showSection('simulacion')">🛰️ Simulación</button>
         </div>
         <div id="planeta-section" class="section" style="display:none;">
             <label for="planeta">Planeta de destino:</label>
@@ -97,8 +181,8 @@
                 <option value="Jupiter">Jupiter</option>
                 <option value="Saturno">Saturno</option>
             </select>
-            <button onclick="confirmarPlaneta()">Confirmar planeta</button>
-            <div id="info-planeta"></div>
+            <button class="sim-btn" onclick="confirmarPlaneta()">Confirmar planeta</button>
+            <div id="info-planeta" class="info-box" style="display:none;"></div>
         </div>
         <div id="nave-section" class="section" style="display:none;">
             <label for="pasajeros">Cantidad de pasajeros:</label>
@@ -109,15 +193,15 @@
                 <option value="Nebula Cruiser">Nebula Cruiser</option>
                 <option value="Star Runner">Star Runner</option>
             </select>
-            <button onclick="confirmarNave()">Confirmar nave</button>
-            <div id="info-nave"></div>
+            <button class="sim-btn" onclick="confirmarNave()">Confirmar nave</button>
+            <div id="info-nave" class="info-box" style="display:none;"></div>
         </div>
         <div id="simulacion-section" class="section" style="display:none;">
             <div class="progress-bar">
                 <div class="progress" id="progress">0%</div>
             </div>
             <div class="event-log" id="event-log"></div>
-            <button onclick="iniciarSimulacion()">Iniciar Simulación</button>
+            <button class="sim-btn" onclick="iniciarSimulacion()">Iniciar Simulación</button>
         </div>
     </div>
     <script>
@@ -164,14 +248,18 @@
             const planeta = document.getElementById('planeta').value;
             planetaSeleccionado = planeta;
             const info = planetas[planeta];
-            document.getElementById('info-planeta').innerHTML = `<strong>${planeta}</strong><br>Distancia: ${info.distancia} millones de km<br>${info.descripcion}`;
+            const infoBox = document.getElementById('info-planeta');
+            infoBox.innerHTML = `<strong>🪐 ${planeta}</strong><br>Distancia: ${info.distancia} millones de km<br>${info.descripcion}`;
+            infoBox.style.display = 'block';
         }
         function confirmarNave() {
             const nave = document.getElementById('nave').value;
             naveSeleccionada = nave;
             const pasajeros = document.getElementById('pasajeros').value;
             const info = naves[nave];
-            document.getElementById('info-nave').innerHTML = `<strong>${nave}</strong><br>Velocidad: ${info.velocidad} km/h<br>${info.descripcion}<br>Pasajeros: ${pasajeros}`;
+            const infoBox = document.getElementById('info-nave');
+            infoBox.innerHTML = `<strong>🚀 ${nave}</strong><br>Velocidad: ${info.velocidad} km/h<br>${info.descripcion}<br>Pasajeros: ${pasajeros}`;
+            infoBox.style.display = 'block';
         }
         function iniciarSimulacion() {
             if (!planetaSeleccionado || !naveSeleccionada) {
@@ -184,16 +272,16 @@
             eventLog.innerHTML = '';
             function randomEvent() {
                 const rand = Math.random();
-                if (rand < 0.1) return 'Evento aleatorio: Falla en el sistema. --Iniciando Reparaciones..--';
-                if (rand < 0.4) return 'Evento aleatorio: Impacto de Asteroide. -_Evadiendo Asteroide--';
-                if (rand < 0.7) return 'Evento aleatorio: Falla en un motor. Reparando...';
+                if (rand < 0.1) return '⚠️ Evento aleatorio: Falla en el sistema. --Iniciando Reparaciones..--';
+                if (rand < 0.4) return '☄️ Evento aleatorio: Impacto de Asteroide. -_Evadiendo Asteroide--';
+                if (rand < 0.7) return '🛠️ Evento aleatorio: Falla en un motor. Reparando...';
                 return '';
             }
             function step() {
                 if (progress >= 100) {
                     progressBar.style.width = '100%';
                     progressBar.textContent = '100%';
-                    eventLog.innerHTML += '<div>¡Felicidades! Has llegado a tu destino.</div>';
+                    eventLog.innerHTML += '<div>🎉 ¡Felicidades! Has llegado a tu destino.</div>';
                     return;
                 }
                 const incremento = Math.floor(Math.random() * 11) + 5; // 5-15%
@@ -203,6 +291,7 @@
                 progressBar.textContent = progress + '%';
                 const evento = randomEvent();
                 if (evento) eventLog.innerHTML += `<div>${evento}</div>`;
+                eventLog.scrollTop = eventLog.scrollHeight;
                 setTimeout(step, 1000);
             }
             progressBar.style.width = '0%';
