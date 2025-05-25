@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Interplanetario</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #232526, #414345);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(30, 30, 40, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            padding: 32px 24px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #ffd700;
+        }
+        .menu, .section {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            margin-bottom: 16px;
+        }
+        button {
+            background: #ffd700;
+            color: #232526;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #ffb300;
+        }
+        .progress-bar {
+            width: 100%;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress {
+            height: 24px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            width: 0%;
+            color: #232526;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        .event-log {
+            background: #222;
+            border-radius: 6px;
+            padding: 12px;
+            min-height: 60px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulador Interplanetario</h1>
+        <div class="menu section">
+            <button onclick="showSection('planeta')">1. Seleccionar planeta</button>
+            <button onclick="showSection('nave')">2. Seleccionar nave</button>
+            <button onclick="showSection('simulacion')">3. Iniciar simulación</button>
+        </div>
+        <div id="planeta-section" class="section" style="display:none;">
+            <label for="planeta">Planeta de destino:</label>
+            <select id="planeta">
+                <option value="Marte">Marte</option>
+                <option value="Jupiter">Jupiter</option>
+                <option value="Saturno">Saturno</option>
+            </select>
+            <button onclick="confirmarPlaneta()">Confirmar planeta</button>
+            <div id="info-planeta"></div>
+        </div>
+        <div id="nave-section" class="section" style="display:none;">
+            <label for="pasajeros">Cantidad de pasajeros:</label>
+            <input type="number" id="pasajeros" min="1" value="1">
+            <label for="nave">Nave:</label>
+            <select id="nave">
+                <option value="Galactic Voyager">Galactic Voyager</option>
+                <option value="Nebula Cruiser">Nebula Cruiser</option>
+                <option value="Star Runner">Star Runner</option>
+            </select>
+            <button onclick="confirmarNave()">Confirmar nave</button>
+            <div id="info-nave"></div>
+        </div>
+        <div id="simulacion-section" class="section" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress" id="progress">0%</div>
+            </div>
+            <div class="event-log" id="event-log"></div>
+            <button onclick="iniciarSimulacion()">Iniciar Simulación</button>
+        </div>
+    </div>
+    <script>
+        // Datos de ejemplo (puedes sincronizar con el backend en el futuro)
+        const planetas = {
+            'Marte': {
+                distancia: 78.3,
+                descripcion: 'Es conocido como el planeta rojo, su superficie rica en óxido de hierro. Tiene una atmósfera delgada de dióxido de carbono, temperaturas frías. Su superficie muestra volcanes, valles y evidencias de agua en el pasado.'
+            },
+            'Jupiter': {
+                distancia: 628.7,
+                descripcion: 'Es el planeta más grande, compuesto principalmente de hidrógeno y helio. Es conocido por sus bandas de nubes y la Gran Mancha Roja, una tormenta gigante.'
+            },
+            'Saturno': {
+                distancia: 1275.0,
+                descripcion: 'Es conocido por sus anillos formados por hielo y partículas rocosas. Es compuesto principalmente de hidrógeno y helio.'
+            }
+        };
+        const naves = {
+            'Galactic Voyager': {
+                velocidad: 12000,
+                descripcion: 'Esta nave tiene impulsores avanzados, esta nave esta diseñada para ofrecer trayectos cortos y rapidos entre planetas cercanos.'
+            },
+            'Nebula Cruiser': {
+                velocidad: 20000,
+                descripcion: 'Esta equipada con tecnologia de ultima generacion para viajes interplanetarios, su diseño aerodinamico maximiza la eficiencia de combustible.'
+            },
+            'Star Runner': {
+                velocidad: 25000,
+                descripcion: 'Su robusta estructura y capacidad de carga la hacen ideal para transportar grandes grupos de pasajeros y equipos.'
+            }
+        };
+        let planetaSeleccionado = null;
+        let naveSeleccionada = null;
+        function showSection(section) {
+            document.getElementById('planeta-section').style.display = 'none';
+            document.getElementById('nave-section').style.display = 'none';
+            document.getElementById('simulacion-section').style.display = 'none';
+            if (section === 'planeta') document.getElementById('planeta-section').style.display = 'block';
+            if (section === 'nave') document.getElementById('nave-section').style.display = 'block';
+            if (section === 'simulacion') document.getElementById('simulacion-section').style.display = 'block';
+        }
+        function confirmarPlaneta() {
+            const planeta = document.getElementById('planeta').value;
+            planetaSeleccionado = planeta;
+            const info = planetas[planeta];
+            document.getElementById('info-planeta').innerHTML = `<strong>${planeta}</strong><br>Distancia: ${info.distancia} millones de km<br>${info.descripcion}`;
+        }
+        function confirmarNave() {
+            const nave = document.getElementById('nave').value;
+            naveSeleccionada = nave;
+            const pasajeros = document.getElementById('pasajeros').value;
+            const info = naves[nave];
+            document.getElementById('info-nave').innerHTML = `<strong>${nave}</strong><br>Velocidad: ${info.velocidad} km/h<br>${info.descripcion}<br>Pasajeros: ${pasajeros}`;
+        }
+        function iniciarSimulacion() {
+            if (!planetaSeleccionado || !naveSeleccionada) {
+                alert('Selecciona un planeta y una nave primero.');
+                return;
+            }
+            let progress = 0;
+            const progressBar = document.getElementById('progress');
+            const eventLog = document.getElementById('event-log');
+            eventLog.innerHTML = '';
+            function randomEvent() {
+                const rand = Math.random();
+                if (rand < 0.1) return 'Evento aleatorio: Falla en el sistema. --Iniciando Reparaciones..--';
+                if (rand < 0.4) return 'Evento aleatorio: Impacto de Asteroide. -_Evadiendo Asteroide--';
+                if (rand < 0.7) return 'Evento aleatorio: Falla en un motor. Reparando...';
+                return '';
+            }
+            function step() {
+                if (progress >= 100) {
+                    progressBar.style.width = '100%';
+                    progressBar.textContent = '100%';
+                    eventLog.innerHTML += '<div>¡Felicidades! Has llegado a tu destino.</div>';
+                    return;
+                }
+                const incremento = Math.floor(Math.random() * 11) + 5; // 5-15%
+                progress += incremento;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                const evento = randomEvent();
+                if (evento) eventLog.innerHTML += `<div>${evento}</div>`;
+                setTimeout(step, 1000);
+            }
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            step();
+        }
+    </script>
+</body>
+</html> 
